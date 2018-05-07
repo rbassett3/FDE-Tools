@@ -50,7 +50,7 @@ fde.Plot()
 plt.show()
 ```
 
-##Examples
+## Examples
 ### A univariate example
 In this example, we will estimate a normal density with 100 data points.
 ```
