@@ -109,4 +109,4 @@ fde.SolveProblem(.022)
 fde.Plot()
 plt.show()
 ```          
-<img src="https://github.com/rbassett3/FDE-Tools/blob/master/Examples/SanDiego/SanDiego.pdf">
+<img src="https://github.com/rbassett3/FDE-Tools/blob/master/Examples/SanDiego/SanDiego.png">
