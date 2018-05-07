@@ -79,7 +79,7 @@ plt.plot(x, stats.norm.pdf(x), color = 'darkorange')
 fde.Plot()
 plt.show()
 ```
-<img src="https://github.com/rbassett3/FDE-Tools/blob/master/Examples/Univariate/Normal.pdf">
+<img src="https://github.com/rbassett3/FDE-Tools/blob/master/Examples/Univariate/Normal.png">
 
 ### A geometric network example
 In this example we will load a geometric network from an OSM XML file ("SanDiego.xml"). We will also extract observations from the XML file as the locations of eateries in the downloaded region.
