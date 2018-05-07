@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../../")
+sys.path.append("../../FDE-Tools")
 from HelperFunctions import *
 from FDE import *
 
