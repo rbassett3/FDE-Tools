@@ -55,7 +55,7 @@ plt.show()
 In this example, we will estimate a normal density with 100 data points.
 ```
 import sys
-sys.path.append("../../FDE-Tools") #import package
+sys.path.append("../../FDE-Tools") #put package in path
 from FDE import *
 import scipy.stats as stats
 
@@ -79,11 +79,13 @@ plt.plot(x, stats.norm.pdf(x), color = 'darkorange')
 fde.Plot()
 plt.show()
 ```
+<img src="ComingSoon">
+
 ### A geometric network example
 In this example we will load a geometric network from an OSM XML file ("SanDiego.xml"). We will also extract observations from the XML file as the locations of eateries in the downloaded region.
 ```
 import sys
-sys.path.append("../../FDE-Tools") #import package
+sys.path.append("../../FDE-Tools") #put package in path
 from FDE import *
 from HelperFunctions import *
 
@@ -107,3 +109,4 @@ fde.SolveProblem(.022)
 fde.Plot()
 plt.show()
 ```          
+<img src="ComingSoon">
