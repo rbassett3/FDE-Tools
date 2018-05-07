@@ -1,5 +1,5 @@
 # FDE-Tools
-Python code for computing fused density estimators (FDEs). Further details on fused density estimation can be found here. This package also contains a number auxillary functions for importing and building geometric networks from OpenStreetMaps (OSM) XML files.
+Python code for computing fused density estimators (FDEs). Further details on fused density estimation can be found here. This package also contains a number auxiliary functions for importing and building geometric networks from [OpenStreetMaps](https://www.openstreetmap.org/#map=5/38.565/-102.876) (OSM) XML files.
 ## Installation & Configuration
 1. Clone this repository to a local directory.
 2. Install OSQP, and (optionally, for interior-point capabilities) CVXOPT
@@ -33,7 +33,7 @@ Geometric network FDEs can be declared with the syntax
 ```
 fde = FDE(L,P)
 ```
-L is an array with elements as the segments of the geometric network. A segment is an array of 2D points. By default, these are assumed to be of the form (long, lat) and segment distances are calculated from these coordinates. As an example of this syntax,
+L is an array with elements as the segments of the geometric network. A segment is an array of 2D points. By default, these are assumed to be of the form (longitude, latitude) and segment distances are calculated from these coordinates. As an example of this syntax,
 ```
 L = [[[x1, y1], [x2, y2], [x3, y3]], [[x4, y4], [x2, y2], [x5, y5]]]
 ```
@@ -66,6 +66,7 @@ fde = UnivarFDE((a,b), P) #Declare and solve FDE
 fde.GenerateProblem()
 fde.SolveProblem(.030)
 fde.Plot()
+x = np.linspace(-4,4,100)
 plt.plot(x, stats.norm.pdf(x), color = 'darkorange')
 plt.show()
 
@@ -74,7 +75,6 @@ print("Performing Cross Validation...")
 lam = fde.CrossValidate()
 fde.SolveProblem(lam)
 print("Optimal lambda parameter: " + str(lam))
-x = np.linspace(-4,4,100)
 plt.plot(x, stats.norm.pdf(x), color = 'darkorange')
 fde.Plot()
 plt.show()
@@ -87,17 +87,19 @@ In this example we will load a geometric network from an OSM XML file ("SanDiego
 import sys
 sys.path.append("../../FDE-Tools") #put package in path
 from FDE import *
-from HelperFunctions import *
+from HelperFunctions import * #HelperFunctions includes functions for importing OSM data
 
 #A window to focus on
 lon = (-117.7, -117.149)
 lat = (32.7071, 32.7216)
 
 #Load data from xml, filter it to desired window
-L = LoadMapXML("SanDiego.xml")
+print("Loading data from file")
+L = LoadMapXML("SanDiego.xml") 
 L = [FilterData(l, lon, lat) for l in L]
 P = GetEateries("SanDiego.xml")
 P = FilterData(P, lon, lat)
+#This will likely take a while to load. Save L & P with numpy.save for quick reloading.
 
 #Declare and solve the FDE
 print("Declaring fused density estimator")
