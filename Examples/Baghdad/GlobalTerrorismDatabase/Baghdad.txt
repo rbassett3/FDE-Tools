@@ -1,0 +1,4 @@
+Both the map and the data from the global terrorism database have been thresholded to have 
+33.2979 <= latitude <= 33.3296 
+and
+44.3245 <= longitude <= 44.3918
