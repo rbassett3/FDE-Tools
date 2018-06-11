@@ -330,11 +330,11 @@ class FDE:
         ax.set_xlim(np.min(Segs[:,:,0]), np.max(Segs[:,:,0]))
         if self.Problem_Solved == True:
             lines = LineCollection(Segs, cmap = "rainbow", array = np.array([self.z[self.Seg2s_index[seg]] for seg in self.Seg2s_index.keys()]))
+            plt.colorbar(lines, format = '%.2f')
         else:
-            lines = LineCollection(Segs, colors = 'k')
+            lines = LineCollection(Segs, colors = 'b')
         lines.set_clim(vmin = 0)
         ax.add_collection(lines)
-        plt.colorbar(lines, format = '%.2f')
         plt.xticks([])
         plt.yticks([])
         plt.scatter([P[0] for P in self.Point2Obs.keys() if P != False and self.Point2Obs[P] != 0] , [P[1] for P in self.Point2Obs.keys() if P != False and self.Point2Obs[P] != 0], s = 50, c = 'k', marker = 'o', zorder = 2)
