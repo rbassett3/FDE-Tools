@@ -7,10 +7,10 @@ FDE on Geometric Network                                                        
  
 ## Installation & Configuration
 
+**Update 8/18/21**: This package is now a few years old, and some of its packages are outdated. For specific version numbers of major Python packages that you can use in order to generate a compatible environment, see [this](https://github.com/rbassett3/FDE-Tools/issues/1) issue. Original directions are below.
+
 1. Clone this repository to a local directory.
 2. Install OSQP, and (optionally, for interior-point capabilities) CVXOPT
-
-**Update 8/18/21**: This package is now a few years old, and some of its packages are outdated. For specific version numbers of major Python packages that you can use in order to generate a compatible environment, see [this](https://github.com/rbassett3/FDE-Tools/issues/1) issue.
 
 ```
 pip install OSQP CVXOPT
