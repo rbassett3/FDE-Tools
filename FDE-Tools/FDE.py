@@ -28,15 +28,15 @@ class FDE:
     def __init__(self, Lines, Obs, OneConComp = True, lat_lon = True):
         self.lat_lon = lat_lon
         #Map to tuples for use with dictionary
-        Ltup = [map(tuple, l) for l in Lines]
+        Ltup = [list(map(tuple, l)) for l in Lines]
         self.Ltup = Ltup
         #A collection of all points in L 
         LumpL = np.vstack(Lines) #set -> list removes duplicates
-        LumpL = map(tuple, LumpL) 
+        LumpL = list(map(tuple, LumpL)) 
         LumpL = set(LumpL)
         LumpL = list(LumpL)
         #Dictionary connecting points to the corresponding node
-        self.Point2Node = dict(zip(map(tuple, LumpL), range(len(LumpL))))
+        self.Point2Node = dict(list(zip(list(map(tuple, LumpL)), list(range(len(LumpL))))))
         #Build Adjacency matrix, and dictionaries connecting segments to length and nodes to length
         (Adj, self.Seg2Node, self.Node2Len) = self.BuildAdjMat(Ltup, self.Point2Node)
         #In Compressed sparse column format because COO format does not permit column slicing
@@ -44,22 +44,22 @@ class FDE:
         if OneConComp == True:
             (Adj, self.Point2Node, self.Seg2Node, self.Node2Len) = self.BigConnComp(self.AdjCsc, self.Point2Node, self.Seg2Node, self.Node2Len)
             #Form new LumpL and project onto it
-            LumpL = self.Point2Node.keys()
+            LumpL = list(self.Point2Node.keys())
             list(set(LumpL))
             self.AdjCsc = Adj.tocsc()
         Obs = self.ProjectToNetwork(Obs, LumpL) #The projection
     
         #Updating the dictionaries
-        self.Point2Obs = dict(zip(LumpL, np.zeros(len(LumpL))))
+        self.Point2Obs = dict(list(zip(LumpL, np.zeros(len(LumpL)))))
         self.Point2Obs.update(collections.Counter([tuple(obs) for obs in Obs]))
         self.numNodes = self.AdjCsc.shape[0]
-        Node2Point = dict(zip(self.Point2Node.values(), self.Point2Node.keys()))
+        Node2Point = dict(list(zip(list(self.Point2Node.values()), list(self.Point2Node.keys()))))
         #If node is not a point, it is [False] in Node2Point dictionary
-        Node2Point.update(dict(zip(range(len(self.Point2Node), self.numNodes), [False]*(self.numNodes-len(LumpL)))))
+        Node2Point.update(dict(list(zip(list(range(len(self.Point2Node), self.numNodes)), [False]*(self.numNodes-len(LumpL))))))
         #False has no observations, so Node2Point[Point2Obs[n]] = 0 when n corresponds to a segment
         self.Point2Obs[False] = 0
         #A dictionary from nodes to observations
-        self.Node2Obs = dict(zip(range(self.numNodes), [self.Point2Obs[Node2Point[n]] for n in range(self.numNodes)]))
+        self.Node2Obs = dict(list(zip(list(range(self.numNodes)), [self.Point2Obs[Node2Point[n]] for n in range(self.numNodes)])))
     
         self.Problem_Declared = False
         self.Problem_Solved = False
@@ -77,7 +77,7 @@ class FDE:
     
         #Construct a quotient graph, where we group the unimportant nodes into a single node.
         #Linear in number of edges. Thanks Kirill!
-        Edges = zip(self.AdjCsc.nonzero()[0], self.AdjCsc.nonzero()[1])
+        Edges = list(zip(self.AdjCsc.nonzero()[0], self.AdjCsc.nonzero()[1]))
         NewEdges = np.array([[ConComp[e[0]], ConComp[e[1]]] for e in Edges if ConComp[e[0]] != ConComp[e[1]]])
         #Reduced adjacency matrix
         RedAdj = sp.coo_matrix(([True]*NewEdges.shape[0], (NewEdges[:,0], NewEdges[:,1])))
@@ -93,12 +93,12 @@ class FDE:
         #The number of observations of each connected component
         ObsVec = np.array([self.Node2Obs[i] for i in range(len(self.Node2Obs))])
         #Updating length and observation dictionaries to the quotient.
-        RedNode2Len = dict(zip(range(numComp), [(LenVec[CompMat[ind, :].nonzero()[1]]).sum() for ind in range(numComp)]))
-        RedNode2Obs = dict(zip(range(numComp), [(ObsVec[CompMat[ind, :].nonzero()[1]]).sum() for ind in range(numComp)]))
+        RedNode2Len = dict(list(zip(list(range(numComp)), [(LenVec[CompMat[ind, :].nonzero()[1]]).sum() for ind in range(numComp)])))
+        RedNode2Obs = dict(list(zip(list(range(numComp)), [(ObsVec[CompMat[ind, :].nonzero()[1]]).sum() for ind in range(numComp)])))
     
         #Vectors of these quantities
-        RedLenVec = np.array(RedNode2Len.values())
-        RedObsVec = np.array(RedNode2Obs.values())
+        RedLenVec = np.array(list(RedNode2Len.values()))
+        RedObsVec = np.array(list(RedNode2Obs.values()))
     
         s_inds = RedLenVec != 0
         u_inds = np.logical_not(s_inds)
@@ -108,9 +108,9 @@ class FDE:
         self.u = -RedObsVec[u_inds]/(RedObsVec[u_inds].sum())
     
         #Seg -> OldNode -> NewNode -> Index among columns of D (same as indices of s)
-        OldNode2NewNode = dict(zip(range(self.numNodes), [ConComp[i] for i in range(self.numNodes)]))
-        NewNode2s_ind = dict(zip(s_inds.nonzero()[0], range(len(self.s))))
-        self.Seg2s_index = dict(zip(self.Seg2Node.keys(), [NewNode2s_ind[OldNode2NewNode[self.Seg2Node[seg]]] for seg in self.Seg2Node.keys()])) 
+        OldNode2NewNode = dict(list(zip(list(range(self.numNodes)), [ConComp[i] for i in range(self.numNodes)])))
+        NewNode2s_ind = dict(list(zip(s_inds.nonzero()[0], list(range(len(self.s))))))
+        self.Seg2s_index = dict(list(zip(list(self.Seg2Node.keys()), [NewNode2s_ind[OldNode2NewNode[self.Seg2Node[seg]]] for seg in list(self.Seg2Node.keys())]))) 
         self.Problem_Declared = True
     
     def ProjectToNetwork(self, P, LumpL):
@@ -135,11 +135,11 @@ class FDE:
         lengths = []
         numSegs = sum([len(l)-1 for l in Ltup])
         Segs = []
-        map(Segs.extend, [zip(l[:-1], l[1:]) for l in Ltup])
-        Seg2Node = dict(zip(Segs, range(len(Point2Node), len(Point2Node)+len(Segs))))
+        list(map(Segs.extend, [list(zip(l[:-1], l[1:])) for l in Ltup]))
+        Seg2Node = dict(list(zip(Segs, list(range(len(Point2Node), len(Point2Node)+len(Segs))))))
         if self.lat_lon == False: #treat the tuples as elements in R^n
             #pdb.set_trace()
-            Node2Len = dict(zip(range(len(Point2Node)+len(Segs)), [0]*len(Point2Node)+[np.linalg.norm(np.subtract(s[1],s[0])) for s in Segs]))
+            Node2Len = dict(list(zip(list(range(len(Point2Node)+len(Segs))), [0]*len(Point2Node)+[np.linalg.norm(np.subtract(s[1],s[0])) for s in Segs])))
         else: 
             #treat the tuples as (lon,lat) coordinates 
             #Use Haversine formula to compute distance
@@ -154,7 +154,7 @@ class FDE:
                 lng2, lat2 = x2
         
                 # convert all latitudes/longitudes from decimal degrees to radians
-                lat1, lng1, lat2, lng2 = map(math.radians, (lat1, lng1, lat2, lng2))
+                lat1, lng1, lat2, lng2 = list(map(math.radians, (lat1, lng1, lat2, lng2)))
         
                 # calculate haversine
                 lat = lat2 - lat1
@@ -165,11 +165,11 @@ class FDE:
                     return h * MILES_PER_KILOMETER # in miles
                 else:
                     return h # in kilometers 
-            Node2Len = dict(zip(range(len(Point2Node)+len(Segs)), [0]*len(Point2Node)+[haversine(s[1],s[0]) for s in Segs]))
+            Node2Len = dict(list(zip(list(range(len(Point2Node)+len(Segs))), [0]*len(Point2Node)+[haversine(s[1],s[0]) for s in Segs])))
 
         #Fill the i and j arrays for sparse COO format. 
-        [map(i.extend, [[Point2Node[l[ind]], Seg2Node[(l[ind], l[ind+1])], Seg2Node[(l[ind], l[ind+1])], Point2Node[l[ind+1]]] for ind in range(len(l)-1)]) for l in Ltup if l !=[]]
-        [map(j.extend, [[Seg2Node[(l[ind], l[ind+1])], Point2Node[l[ind]], Point2Node[l[ind+1]], Seg2Node[(l[ind], l[ind+1])]] for ind in range(len(l)-1)]) for l in Ltup if l != []]
+        [list(map(i.extend, [[Point2Node[l[ind]], Seg2Node[(l[ind], l[ind+1])], Seg2Node[(l[ind], l[ind+1])], Point2Node[l[ind+1]]] for ind in range(len(l)-1)])) for l in Ltup if l !=[]]
+        [list(map(j.extend, [[Seg2Node[(l[ind], l[ind+1])], Point2Node[l[ind]], Point2Node[l[ind+1]], Seg2Node[(l[ind], l[ind+1])]] for ind in range(len(l)-1)])) for l in Ltup if l != []]
         AdjDict = sp.coo_matrix((np.ones(len(i)), (i,j))) #The adjacency matrix
         return AdjDict, Seg2Node, Node2Len
 
@@ -178,7 +178,7 @@ class FDE:
         '''Build an oriented edge-incident matrix from an adjacency matrix'''
         UpTriAdj = sp.triu(Adj)
         numEdge = UpTriAdj.nnz
-        i = np.array(range(numEdge) + range(numEdge))
+        i = np.array(list(range(numEdge)) + list(range(numEdge)))
         j = np.hstack([UpTriAdj.nonzero()[0], UpTriAdj.nonzero()[1]])
         data = np.array([1.0]*numEdge + [-1.0]*numEdge)
         return sp.coo_matrix((data, (i,j))) #The oriented edge-incidence matrix
@@ -198,16 +198,16 @@ class FDE:
         NewAdjMat = NewAdjMat[BigComp, :]
         
         #Remove the removed nodes form Seg2Node and Point2Node
-        Node2Seg = dict(zip(Seg2Node.values(), Seg2Node.keys()))
-        [Node2Seg.pop(n) for n in Seg2Node.values() if not BigComp[n]]
-        Node2Point = dict(zip(Point2Node.values(), Point2Node.keys()))
-        [Node2Point.pop(n) for n in Point2Node.values() if not BigComp[n]]
+        Node2Seg = dict(list(zip(list(Seg2Node.values()), list(Seg2Node.keys()))))
+        [Node2Seg.pop(n) for n in list(Seg2Node.values()) if not BigComp[n]]
+        Node2Point = dict(list(zip(list(Point2Node.values()), list(Point2Node.keys()))))
+        [Node2Point.pop(n) for n in list(Point2Node.values()) if not BigComp[n]]
            
         #Update the dictionaries 
-        Point2Node = dict(zip(Node2Point.values(), range(len(Node2Point))))
-        Seg2Node = dict(zip(Node2Seg.values(), range(len(Node2Point), NewAdjMat.shape[0])))
-        Node2Len = dict(zip(range(NewAdjMat.shape[0]), [0]*NewAdjMat.shape[0]))
-        Node2Len.update(dict(zip(range(len(Node2Point), NewAdjMat.shape[0]), [np.linalg.norm(np.subtract(i[1],i[0])) for i in Seg2Node.keys()])))
+        Point2Node = dict(list(zip(list(Node2Point.values()), list(range(len(Node2Point))))))
+        Seg2Node = dict(list(zip(list(Node2Seg.values()), list(range(len(Node2Point), NewAdjMat.shape[0])))))
+        Node2Len = dict(list(zip(list(range(NewAdjMat.shape[0])), [0]*NewAdjMat.shape[0])))
+        Node2Len.update(dict(list(zip(list(range(len(Node2Point), NewAdjMat.shape[0])), [np.linalg.norm(np.subtract(i[1],i[0])) for i in list(Seg2Node.keys())]))))
           
         return (NewAdjMat, Point2Node, Seg2Node, Node2Len)
 
@@ -239,13 +239,13 @@ class FDE:
     
             if solver == "cvxopt":
                 P_coo = (self.D1*sp.diags(1/self.s)*self.D1.T).tocoo()
-                P_sparse = cvxopt.spmatrix(map(float, P_coo.data), P_coo.row.tolist(), P_coo.col.tolist(), size = P_coo.shape)
+                P_sparse = cvxopt.spmatrix(list(map(float, P_coo.data)), P_coo.row.tolist(), P_coo.col.tolist(), size = P_coo.shape)
                 q = cvxopt.matrix(np.zeros(self.D1.shape[0]))
                 A_coo = (self.D2.T).tocoo()
-                A_sparse = cvxopt.spmatrix(map(float, A_coo.data), A_coo.row.tolist(), A_coo.col.tolist(), size = A_coo.shape)
+                A_sparse = cvxopt.spmatrix(list(map(float, A_coo.data)), A_coo.row.tolist(), A_coo.col.tolist(), size = A_coo.shape)
                 b = cvxopt.matrix(-self.u)
                 G_coo = (sp.vstack([sp.eye(self.D2.shape[0]), - sp.eye(self.D2.shape[0])])).tocoo()
-                G_sparse = cvxopt.spmatrix(map(float, G_coo.data), G_coo.row.tolist(), G_coo.col.tolist(), size = G_coo.shape)
+                G_sparse = cvxopt.spmatrix(list(map(float, G_coo.data)), G_coo.row.tolist(), G_coo.col.tolist(), size = G_coo.shape)
                 h = cvxopt.matrix(np.hstack([lam*np.ones(self.D2.shape[0]), lam*np.ones(self.D2.shape[0])]))
                 start = timer()
                 results = cvxopt.solvers.qp(P_sparse, q, G_sparse, h, A_sparse, b, options = {'abstol': 1e-4, 'maxiters': 1000})
@@ -301,9 +301,9 @@ class FDE:
         if self.Problem_Declared == False:
             raise ValueError("Problem must be declared in order to fit lambda parameter")
         self.uTrue = np.copy(self.u)
-        Data = range(len(self.u))
-        random.shuffle(range(len(self.u)))
-        PartData = [Data[i:i+len(Data)/fold] for i in range(0, len(Data), len(Data)/fold)]
+        Data = list(range(len(self.u)))
+        random.shuffle(list(range(len(self.u))))
+        PartData = [Data[i:i+len(Data)//fold] for i in range(0, len(Data), len(Data)//fold)]
         Lam = np.linspace(-np.min(self.u)/2, max_lam, 20) #Sensitive
         Results = np.array([[self.fit([i for j in range(fold) if j != k for i in PartData[j]], PartData[k], lam = Lam[l]) for k in range(fold)] for l in range(1, len(Lam))])
         self.u = np.copy(self.uTrue)
@@ -324,12 +324,12 @@ class FDE:
         if self.Problem_Declared == False:
             raise ValueError("Problem must be generated in order to plot network")
         ax = plt.axes()
-        Segs = np.array(self.Seg2s_index.keys())
+        Segs = np.array(list(self.Seg2s_index.keys()))
         ax = plt.axes()
         ax.set_ylim(np.min(Segs[:,:,1]), np.max(Segs[:,:,1]))
         ax.set_xlim(np.min(Segs[:,:,0]), np.max(Segs[:,:,0]))
         if self.Problem_Solved == True:
-            lines = LineCollection(Segs, cmap = "rainbow", array = np.array([self.z[self.Seg2s_index[seg]] for seg in self.Seg2s_index.keys()]))
+            lines = LineCollection(Segs, cmap = "rainbow", array = np.array([self.z[self.Seg2s_index[seg]] for seg in list(self.Seg2s_index.keys())]))
             plt.colorbar(lines, format = '%.2f')
         else:
             lines = LineCollection(Segs, colors = 'b')
@@ -337,10 +337,11 @@ class FDE:
         ax.add_collection(lines)
         plt.xticks([])
         plt.yticks([])
-        plt.scatter([P[0] for P in self.Point2Obs.keys() if P != False and self.Point2Obs[P] != 0] , [P[1] for P in self.Point2Obs.keys() if P != False and self.Point2Obs[P] != 0], s = 50, c = 'k', marker = 'o', zorder = 2)
+        plt.scatter([P[0] for P in list(self.Point2Obs.keys()) if P != False and self.Point2Obs[P] != 0] , [P[1] for P in list(self.Point2Obs.keys()) if P != False and self.Point2Obs[P] != 0], s = 50, c = 'k', marker = 'o', zorder = 2)
 
 class UnivarFDE(FDE):
-    def __init__(self, (a,b), P):
+    def __init__(self, xxx_todo_changeme, P):
+        (a,b) = xxx_todo_changeme
         if P.min() < a or P.max() > b:
             ValueError("Observations do not lie in interval")
         L = np.unique(np.hstack([[a], P, [b]]))
@@ -355,7 +356,7 @@ class UnivarFDE(FDE):
         ax = plt.axes()
         if self.Problem_Solved == True:
             #Collect and sort the points
-            sortPoints = np.array([[seg[i][0], self.z[self.Seg2s_index[seg]]] for i in [0,1] for seg in self.Seg2s_index.keys()])
+            sortPoints = np.array([[seg[i][0], self.z[self.Seg2s_index[seg]]] for i in [0,1] for seg in list(self.Seg2s_index.keys())])
             sortPoints = sortPoints[sortPoints[:,0].argsort()]
             sortPoints = np.vstack([[sortPoints[0,0], 0], sortPoints, [sortPoints[-1,0], 0]])
             
@@ -367,7 +368,7 @@ class UnivarFDE(FDE):
             ax.add_collection(horzlines)
             ax.add_collection(vertlines)
             ax.set_xlim(np.min(vertsegs[:,:,0]), np.max(vertsegs[:,:,0]))
-        P = np.array([p for p in self.Point2Obs.keys() if p != False and self.Point2Obs[p] !=0])
+        P = np.array([p for p in list(self.Point2Obs.keys()) if p != False and self.Point2Obs[p] !=0])
         plt.scatter(P[:], np.zeros(len(P)), s = 50, c = 'r', marker = 'v')
         ax.set_ylim(bottom = 0)
 
