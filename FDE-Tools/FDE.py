@@ -340,8 +340,8 @@ class FDE:
         plt.scatter([P[0] for P in list(self.Point2Obs.keys()) if P != False and self.Point2Obs[P] != 0] , [P[1] for P in list(self.Point2Obs.keys()) if P != False and self.Point2Obs[P] != 0], s = 50, c = 'k', marker = 'o', zorder = 2)
 
 class UnivarFDE(FDE):
-    def __init__(self, xxx_todo_changeme, P):
-        (a,b) = xxx_todo_changeme
+    def __init__(self, a_b, P):
+        (a,b) = a_b
         if P.min() < a or P.max() > b:
             ValueError("Observations do not lie in interval")
         L = np.unique(np.hstack([[a], P, [b]]))
