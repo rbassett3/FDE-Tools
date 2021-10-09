@@ -323,21 +323,20 @@ class FDE:
 
         if self.Problem_Declared == False:
             raise ValueError("Problem must be generated in order to plot network")
-        ax = plt.axes()
+        fig, ax = plt.subplots()
         Segs = np.array(list(self.Seg2s_index.keys()))
-        ax = plt.axes()
         ax.set_ylim(np.min(Segs[:,:,1]), np.max(Segs[:,:,1]))
         ax.set_xlim(np.min(Segs[:,:,0]), np.max(Segs[:,:,0]))
         if self.Problem_Solved == True:
             lines = LineCollection(Segs, cmap = "rainbow", array = np.array([self.z[self.Seg2s_index[seg]] for seg in list(self.Seg2s_index.keys())]))
-            plt.colorbar(lines, format = '%.2f')
+            fig.colorbar(lines, format = '%.2f', ax=ax)
         else:
             lines = LineCollection(Segs, colors = 'b')
         lines.set_clim(vmin = 0)
         ax.add_collection(lines)
-        plt.xticks([])
-        plt.yticks([])
-        plt.scatter([P[0] for P in list(self.Point2Obs.keys()) if P != False and self.Point2Obs[P] != 0] , [P[1] for P in list(self.Point2Obs.keys()) if P != False and self.Point2Obs[P] != 0], s = 50, c = 'k', marker = 'o', zorder = 2)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.scatter([P[0] for P in list(self.Point2Obs.keys()) if P != False and self.Point2Obs[P] != 0] , [P[1] for P in list(self.Point2Obs.keys()) if P != False and self.Point2Obs[P] != 0], s = 50, c = 'k', marker = 'o', zorder = 2)
 
 class UnivarFDE(FDE):
     def __init__(self, a_b, P):
@@ -353,7 +352,7 @@ class UnivarFDE(FDE):
          to see the results'''
         if self.Problem_Declared == False:
             raise ValueError("Problem must be generated in order to plot network")
-        ax = plt.axes()
+        fig, ax = plt.subplots()
         if self.Problem_Solved == True:
             #Collect and sort the points
             sortPoints = np.array([[seg[i][0], self.z[self.Seg2s_index[seg]]] for i in [0,1] for seg in list(self.Seg2s_index.keys())])
@@ -369,7 +368,7 @@ class UnivarFDE(FDE):
             ax.add_collection(vertlines)
             ax.set_xlim(np.min(vertsegs[:,:,0]), np.max(vertsegs[:,:,0]))
         P = np.array([p for p in list(self.Point2Obs.keys()) if p != False and self.Point2Obs[p] !=0])
-        plt.scatter(P[:], np.zeros(len(P)), s = 50, c = 'r', marker = 'v')
+        ax.scatter(P[:], np.zeros(len(P)), s = 50, c = 'r', marker = 'v')
         ax.set_ylim(bottom = 0)
 
     
