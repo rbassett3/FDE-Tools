@@ -7,13 +7,13 @@ lon = (-117.7, -117.149)
 lat = (32.7071, 32.7216)
 print("Loading Map")
 if os.path.isfile("SanDiegoMap.npy"):
-    L = np.load("SanDiegoMap.npy")
+    L = np.load("SanDiegoMap.npy",allow_pickle=True,encoding="latin1")
 else:
     L = LoadMapXML("SanDiego.xml")
     L = [FilterData(l, lon, lat) for l in L]
     np.save("SanDiegoMap.npy", L)
 if os.path.isfile("SanDiegoEateries.npy"):
-    P = np.load("SanDiegoEateries.npy")
+    P = np.load("SanDiegoEateries.npy",allow_pickle=True,encoding="latin1")
 else:
     P = GetEateries("SanDiego.xml")
     P = FilterData(P, lon, lat)

@@ -8,7 +8,7 @@ lon = (38.5282, 38.575)
 print("This is a large scale example. Initially loading the map data can take a while.")
 print("Loading Map")
 if os.path.isfile("BigDavisMap.npy"):
-    L = np.load("BigDavisMap.npy")
+    L = np.load("BigDavisMap.npy",allow_pickle=True,encoding="latin1")
 else:
     L = LoadMapXML("BigDavisMap.xml")
     L = [FilterData(l, lat, lon) for l in L]
@@ -29,4 +29,4 @@ fde.GenerateProblem()
 print("Solving Problem")
 fde.SolveProblem(.0271)
 fde.Plot()
-
+plt.show()

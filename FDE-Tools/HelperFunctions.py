@@ -15,7 +15,7 @@ def LoadMapXML(fpath):
     f = xml.etree.ElementTree.parse(fpath).getroot()
     W = f.findall('.//way/tag[@k="highway"]/..')                                        
     #xpath syntax is used for following commands
-    L = [np.array([map(f.find(''.join(['.//node[@id="', n.get('ref'), '"]'])).get, ["lon", "lat"]) for n in w.findall('nd')]) for w in W]
+    L = [np.array([list(map(f.find(''.join(['.//node[@id="', n.get('ref'), '"]'])).get, ["lon", "lat"])) for n in w.findall('nd')]) for w in W]
     L = [l.astype(float) for l in L]
     return L
 
@@ -31,11 +31,12 @@ def GetEateries(fpath):
 
     return np.array([[float(r.get('lon')), float(r.get('lat'))] for r in R])
 
-def FilterData(D, (lon_lb, lon_ub), (lat_lb, lat_ub)):
+def FilterData(D, longitudinal_bounds, latitude_bounds):
     '''Filter the data D, an n x 2 matrix by longitudinal bounds [lon_lb, lon_ub]. In other words, 
     remove data which does not have it longitude greater than lon_lb and less and lon_ub. Do the same 
     with the latitude with respect to lat_lb and lat_ub'''
-    #Purge in the following lines
+    (lon_lb, lon_ub) = longitudinal_bounds
+    (lat_lb, lat_ub) = latitude_bounds
     newInd = np.nonzero(np.logical_and(np.logical_and(D[:,0]>=lon_lb, D[:,0]<=lon_ub), np.logical_and(D[:,1]>=lat_lb, D[:,1]<=lat_ub)))[0]    
     return D[newInd,:]
 

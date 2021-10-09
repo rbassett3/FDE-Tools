@@ -8,7 +8,7 @@ lon = (-121.9, -121.853)
 lat = (36.587, 36.604)
 print("Loading Map")
 if os.path.isfile("Monterey.npy"):
-    L = np.load("Monterey.npy")
+    L = np.load("Monterey.npy",allow_pickle=True,encoding="latin1")
 else:
     L = LoadMapXML("Monterey.xml")
     L = [FilterData(l, lon, lat) for l in L] 
@@ -28,3 +28,4 @@ fde.SolveProblem(.02)
 #print("Optimal lambda parameter: " + str(lam))
 
 fde.Plot()
+plt.show()

@@ -8,7 +8,7 @@ lon = (38.54081, 38.54824)
 
 print("Loading Map")
 if os.path.isfile("DavisMap.npy"):
-    L = np.load("DavisMap.npy")
+    L = np.load("DavisMap.npy",allow_pickle=True,encoding="latin1")
 else:
     L = LoadMapXML("DavisMap.osm")
     L = [FilterData(l, lat, lon) for l in L] 
@@ -16,7 +16,7 @@ else:
 
 print("Loading locations of eateries")
 if os.path.isfile("DavisEateries.npy"):
-    P = np.load("DavisEateries.npy")
+    P = np.load("DavisEateries.npy",allow_pickle=True,encoding="latin1")
 else:
     P = GetEateries("DavisMap.osm")
     P = FilterData(P, lat, lon)
@@ -29,6 +29,6 @@ fde.GenerateProblem()
 print("Solving Problem")
 fde.SolveProblem(.11)
 fde.Plot()
-
+plt.show()
 
 
