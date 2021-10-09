@@ -1,5 +1,6 @@
 import sys
-sys.path.append("../../FDE-Tools")
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "..","..","FDE-Tools"))
 from FDE import *
 from HelperFunctions import *
 
