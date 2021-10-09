@@ -1,5 +1,6 @@
 import sys
-sys.path.append("../../FDE-Tools")
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "..","..","FDE-Tools"))
 from HelperFunctions import *
 from FDE import *
 np.random.seed(0)
