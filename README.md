@@ -1,4 +1,4 @@
-# FDE-Tools
+#FDE-Tools
 Python code for computing fused density estimators (FDEs). Fused density estimation is a computationally tractable method for nonparametric density estimation from univariate and geometric network data. Further details on fused density estimation can be found [here](https://arxiv.org/abs/1805.03288). This package also contains a number of auxiliary functions for importing and building geometric networks from [OpenStreetMaps](https://www.openstreetmap.org/#map=5/38.565/-102.876) (OSM) XML files.
 
 FDE on Geometric Network                                                                |  Univariate FDE
@@ -7,7 +7,7 @@ FDE on Geometric Network                                                        
  
 ## Installation & Configuration
 
-**Update 8/18/21**: This package is now a few years old, and some of its packages are outdated. For specific version numbers of major Python packages that you can use in order to generate a compatible environment, see [this](https://github.com/rbassett3/FDE-Tools/issues/1) issue. Original directions are below.
+**Update 10/08/22**: Big thanks to [Yu Miao](https://github.com/ymiao8), a statistics graduate student at UCLA, for updating the original Python 2 code to Python 3!
 
 1. Clone this repository to a local directory.
 2. Install OSQP, and (optionally, for interior-point capabilities) CVXOPT
